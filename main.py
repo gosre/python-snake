@@ -6,6 +6,7 @@
 """
 
 from Tkinter import *
+from nodes.Snake import Snake
 
 
 # Main method
@@ -30,6 +31,9 @@ class Window(Frame):
     # The canvas to draw our game components on
     canvas = None
 
+    # Our snake
+    snake = Snake()
+
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.master = master
@@ -53,7 +57,9 @@ class Window(Frame):
         # Create a canvas to draw the game on
         self.canvas = Canvas(self)
 
-        # Pack the canvas
+        # Give the canvas some color!
+        self.canvas.config(background="#008000")
+
         self.canvas.pack(fill=BOTH, expand=1)
 
     # Define an update function for game updating and continue to schedule itself on an interval
