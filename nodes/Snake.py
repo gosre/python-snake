@@ -16,13 +16,14 @@ class Snake:
 
     def __init__(self, window):
         self.window = window
+        self.body_parts = []
 
     # Adds a body part to the snake
     def create_body_part(self):
         part = BodyPart(self.window)
         part.set_window_component(self.window.canvas.create_oval(0, 0, 32, 32, outline="blue", fill="gray", width=1))
         if len(self.body_parts) == 0:
-            part.set_position(0, 0)
+            part.set_position(400, 300)
         else:
             last = self.body_parts[-1]
             part.set_position(last.last_position[0], last.last_position[1])
@@ -48,6 +49,10 @@ class Snake:
             self.velocity = [-1, 0]
         elif key == "Right" and self.velocity != [-1, 0]:
             self.velocity = [1, 0]
+
+    # Gets the bounds of this node
+    def getBounds(self):
+        return self.body_parts[0].getBounds()
 
 
 # Represents a body part on the snake
@@ -80,3 +85,6 @@ class BodyPart:
     def set_window_component(self, component):
         self.window_component = component
 
+    # Gets the bounds of this node
+    def getBounds(self):
+        return [self.x, self.y, self.x + 24, self.y + 24]

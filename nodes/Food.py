@@ -30,5 +30,8 @@ class Food:
             return True
         return False
 
+    # Gets the bounds of this node
+    def getBounds(self):
+        return [self.x, self.y, self.x + 10, self.y + 10]
 
 
