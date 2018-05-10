@@ -7,6 +7,7 @@
 
 from Tkinter import *
 from nodes.Snake import Snake, BodyPart
+from nodes.Food import Food
 
 
 # Main method
@@ -25,8 +26,8 @@ def main():
 # Represents our class for displaying a window (inherits from class Frame)
 class Window(Frame):
 
-    # Our interval to update (10 ms)
-    UPDATE_INTERVAL = 10
+    # Our interval to update (16 ms)
+    UPDATE_INTERVAL = 16  # 60 fps
 
     # The canvas to draw our game components on
     canvas = None
@@ -37,11 +38,21 @@ class Window(Frame):
     # If the game is started yet
     started = False
 
+    # The active food on the canvas
+    active_food = None
+
+    # The eaten food component
+    eaten_food_text = None
+    eaten_food = 0
+
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.master = master
         self.snake = Snake(self)
         self.initialize()
+
+        # Make a new food
+        self.new_food()
 
         # Make the head
         self.snake.create_body_part()
@@ -72,11 +83,20 @@ class Window(Frame):
         # Pack the canvas - expand canvas to edges
         self.canvas.pack(fill=BOTH, expand=1)
 
+        # Create a text box for score keeping
+        self.eaten_food_text = self.canvas.create_text(10, 5, text="Score: 0", font=("courier", 20, "bold"), fill="white", anchor=NW)
+
     # Define an update function for game updating and continue to schedule itself on an interval
     def update(self):
 
         if self.started:
+            if self.active_food.can_eat(self.snake):
+                self.new_food()
+                self.snake.create_body_part()
+                self.eaten_food += 1
             self.snake.move_snake()
+
+        self.canvas.itemconfig(self.eaten_food_text, text="Score: " + str(self.eaten_food))
 
         # Reschedule after updating
         self.after(self.UPDATE_INTERVAL, self.update)
@@ -85,6 +105,13 @@ class Window(Frame):
     def key_pressed(self, event):
         self.started = True
         self.snake.change_direction(event.keysym)
+
+    # Creates a new piece of food
+    def new_food(self):
+        if self.active_food:
+            self.canvas.delete(self.active_food.component)
+
+        self.active_food = Food(self)
 
 
 # Initialize the program
