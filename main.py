@@ -107,7 +107,7 @@ class Window(Frame):
             # Check for overlap with food (yay)
             if overlapping(self.active_food.getBounds(), self.snake.getBounds()):
                 self.new_food()
-                self.parts_to_add += 5
+                self.parts_to_add += 10
                 self.eaten_food += 1
 
             print self.parts_to_add
