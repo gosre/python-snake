@@ -6,7 +6,7 @@
 """
 
 from Tkinter import *
-from nodes.Snake import Snake
+from nodes.Snake import Snake, BodyPart
 
 
 # Main method
@@ -25,19 +25,28 @@ def main():
 # Represents our class for displaying a window (inherits from class Frame)
 class Window(Frame):
 
-    # Our interval to update (100 ms)
-    UPDATE_INTERVAL = 100
+    # Our interval to update (10 ms)
+    UPDATE_INTERVAL = 10
 
     # The canvas to draw our game components on
     canvas = None
 
     # Our snake
-    snake = Snake()
+    snake = None
+
+    # If the game is started yet
+    started = False
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.master = master
+        self.snake = Snake(self)
         self.initialize()
+
+        # Make the head
+        self.snake.create_body_part()
+
+        # Start the updater
         self.update()
 
     # Initialize our game window
@@ -60,17 +69,22 @@ class Window(Frame):
         # Give the canvas some color!
         self.canvas.config(background="#008000")
 
+        # Pack the canvas - expand canvas to edges
         self.canvas.pack(fill=BOTH, expand=1)
 
     # Define an update function for game updating and continue to schedule itself on an interval
     def update(self):
+
+        if self.started:
+            self.snake.move_snake()
 
         # Reschedule after updating
         self.after(self.UPDATE_INTERVAL, self.update)
 
     # Called when a key is pressed on the keyboard
     def key_pressed(self, event):
-        print "pressed", event.keysym
+        self.started = True
+        self.snake.change_direction(event.keysym)
 
 
 # Initialize the program
