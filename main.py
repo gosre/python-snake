@@ -105,30 +105,32 @@ class Window(Frame):
         # Only process if player has started the program
         if self.running:
             # Check for overlap with food (yay)
-            if overlapping(self.active_food.getBounds(), self.snake.getBounds()):
+            if overlapping(self.active_food.get_bounds(), self.snake.get_bounds()):
                 self.new_food()
                 self.parts_to_add += 10
                 self.eaten_food += 1
 
-            print self.parts_to_add
+            # Add parts to the snake (to "replicate" animation)
             if self.parts_to_add > 0:
                 self.parts_to_add -= 1
                 self.snake.create_body_part()
             self.snake.move_snake()
 
             # Check for collisions with walls
-            snake_bounds = self.snake.getBounds()
+            snake_bounds = self.snake.get_bounds()
             if snake_bounds[0] < 0 or snake_bounds[2] > self.WIDTH or snake_bounds[1] < 0 or snake_bounds[3] > self.HEIGHT:
                 self.lose_game()
 
             # Check for collisions with own body parts
             index = 0
             for part in self.snake.body_parts:
-                if overlapping(part.getBounds(), self.snake.getBounds()) and index > 8:  # TODO calculate proper amount
+                if overlapping(part.get_bounds(), self.snake.get_bounds()) and index > 8:  # TODO calculate proper amount of ignored parts (near head)
                     self.lose_game()
                 index += 1
         else:
             return
+
+        # Update the player's score
         self.canvas.itemconfig(self.eaten_food_text, text="Score: " + str(self.eaten_food))
 
         # Reschedule after updating
@@ -143,7 +145,6 @@ class Window(Frame):
     def new_food(self):
         if self.active_food:
             self.canvas.delete(self.active_food.component)
-
         self.active_food = Food(self)
 
     # Start Game
@@ -153,11 +154,13 @@ class Window(Frame):
             # Make the header text invisible
             self.canvas.itemconfig(self.header_text, state="hidden")
 
+            # Initialize a new snake
             self.snake = Snake(self)
 
             # Make the head
             self.snake.create_body_part()
 
+            # Set program flag
             self.running = True
 
             # Make a new food
@@ -168,9 +171,7 @@ class Window(Frame):
 
     # Called when the player loses the game (collision with object)
     def lose_game(self):
-        print "lose"
         self.canvas.itemconfig(self.header_text, state="normal")
-
         for part in self.snake.body_parts:
             self.canvas.delete(part.window_component)
         self.running = False

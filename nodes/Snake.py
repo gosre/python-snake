@@ -1,3 +1,5 @@
+SNAKE_WIDTH = 32
+SNAKE_HEIGHT = 32
 
 
 # Snake.py
@@ -21,7 +23,7 @@ class Snake:
     # Adds a body part to the snake
     def create_body_part(self):
         part = BodyPart(self.window)
-        part.set_window_component(self.window.canvas.create_oval(0, 0, 32, 32, outline="blue", fill="lightblue", width=1))
+        part.set_window_component(self.window.canvas.create_oval(0, 0, SNAKE_WIDTH, SNAKE_HEIGHT, outline="blue", fill="lightblue", width=1))
         if len(self.body_parts) == 0:
             part.set_position(400, 300)
             self.window.canvas.itemconfig(part.window_component, fill="blue")
@@ -52,8 +54,8 @@ class Snake:
             self.velocity = [1, 0]
 
     # Gets the bounds of this node
-    def getBounds(self):
-        return self.body_parts[0].getBounds()
+    def get_bounds(self):
+        return self.body_parts[0].get_bounds()
 
 
 # Represents a body part on the snake
@@ -80,12 +82,12 @@ class BodyPart:
         self.last_position = [self.x, self.y]
         self.x = x
         self.y = y
-        self.window.canvas.coords(self.window_component, x, y, x + 32, y + 32)
+        self.window.canvas.coords(self.window_component, x, y, x + SNAKE_WIDTH, y + SNAKE_HEIGHT)
 
     # Sets the window component
     def set_window_component(self, component):
         self.window_component = component
 
     # Gets the bounds of this node
-    def getBounds(self):
+    def get_bounds(self):
         return [self.x, self.y, self.x + 24, self.y + 24]
