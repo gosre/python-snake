@@ -113,8 +113,8 @@ class Window(Frame):
         if self.running:
             # Check for overlap with food (yay)
             if overlapping(self.active_food.get_bounds(), self.snake.get_bounds()):
+                self.parts_to_add += self.active_food.get_size()  # Increase this to a larger number for a "bigger snake faster"
                 self.new_food()
-                self.parts_to_add += 10  # Increase this to a larger number for a "bigger snake faster"
                 self.eaten_food += 1
 
             # Add parts to the snake (to "replicate" animation)
@@ -131,7 +131,7 @@ class Window(Frame):
             # Check for collisions with own body parts
             index = 0
             for part in self.snake.body_parts:
-                if overlapping(part.get_bounds(), self.snake.get_bounds()) and index > 8:  # TODO calculate proper amount of ignored parts (near head)
+                if overlapping(part.get_bounds(), self.snake.get_bounds()) and index > 15:  # TODO calculate proper amount of ignored parts (near head)
                     self.lose_game()
                 index += 1
         else:
