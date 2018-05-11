@@ -60,6 +60,10 @@ class Window(Frame):
     eaten_food_text = None
     eaten_food = 0
 
+    # The player's high score for the session
+    high_score_text = None
+    high_score = 0
+
     # The header text (big screen message)
     header_text = None
 
@@ -100,6 +104,9 @@ class Window(Frame):
         # Create the big header text for game instructions
         self.header_text = self.canvas.create_text(440, 200, text="Press Any Key To Play", anchor=N, fill="black", font=("sans-serif", 40, "bold"))
 
+        # Text area for the player's high score
+        self.high_score_text = self.canvas.create_text(11, 30, text="High-score: N/A", font=("sans-serif", 10, "normal"), fill="white", anchor=NW)
+
     # Define an update function for game updating and continue to schedule itself on an interval
     def update(self):
         # Only process if player has started the program
@@ -107,7 +114,7 @@ class Window(Frame):
             # Check for overlap with food (yay)
             if overlapping(self.active_food.get_bounds(), self.snake.get_bounds()):
                 self.new_food()
-                self.parts_to_add += 10
+                self.parts_to_add += 10  # Increase this to a larger number for a "bigger snake faster"
                 self.eaten_food += 1
 
             # Add parts to the snake (to "replicate" animation)
@@ -175,6 +182,10 @@ class Window(Frame):
         for part in self.snake.body_parts:
             self.canvas.delete(part.window_component)
         self.running = False
+        # Update the player's high-score (if achieved)
+        if self.eaten_food > self.high_score:
+            self.high_score = self.eaten_food
+            self.canvas.itemconfig(self.high_score_text, text="High-score: " + str(self.high_score))
 
 
 # Initialize the program
