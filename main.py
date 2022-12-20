@@ -126,7 +126,7 @@ class Window(Frame):
 
             # Check for collisions with walls
             snake_bounds = self.snake.get_bounds()
-            if snake_bounds[0] < 0 or snake_bounds[2] > self.WIDTH or snake_bounds[1] < 0 or snake_bounds[3] > self.HEIGHT:
+            if snake_bounds[0] < 0 or snake_bounds[2] > self.winfo_width() or snake_bounds[1] < 0 or snake_bounds[3] > self.winfo_height():
                 self.lose_game()
 
             # Check for collisions with own body parts
