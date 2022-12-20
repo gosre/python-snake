@@ -66,6 +66,8 @@ class Window(Frame):
     # The snake parts remaining to add over time
     parts_to_add: int = 0
 
+    action_button: Button
+
     master: Tk = None
 
     def __init__(self, master: Tk = None):
@@ -99,10 +101,14 @@ class Window(Frame):
         self.eaten_food_text = self.canvas.create_text(10, 5, text="Score: 0", font=("courier", 20, "bold"), fill="white", anchor=NW)
 
         # Create the big header text for game instructions
-        self.header_text = self.canvas.create_text(440, 200, text="Press Any Key To Play", anchor=N, fill="black", font=("sans-serif", 40, "bold"))
+        self.header_text = self.canvas.create_text(440, 200, anchor=N, fill="black", font=("sans-serif", 40, "bold"))
 
         # Text area for the player's high score
         self.high_score_text = self.canvas.create_text(11, 30, text="High-score: N/A", font=("sans-serif", 10, "normal"), fill="white", anchor=NW)
+
+        self.action_button = Button(self, height=1, text="Start Game", command=self.start_game, font=("courier", 20, "bold"))
+
+        self.configure_menu("Welcome to 2D Snake!")
 
     def update(self):
         """Define an update function for game updating and continue to schedule itself on an interval"""
@@ -145,8 +151,8 @@ class Window(Frame):
 
     def key_pressed(self, event):
         """Called when a key is pressed on the keyboard"""
-        self.start_game()
-        self.snake.change_direction(event.keysym)
+        if self.running:
+            self.snake.change_direction(event.keysym)
 
     def new_food(self):
         """Creates a new piece of food and randomly places it"""
@@ -158,8 +164,8 @@ class Window(Frame):
         """Called when the player triggers the start of a game"""
         if not self.running:
             self.eaten_food = 0
-            # Make the header text invisible
-            self.canvas.itemconfig(self.header_text, state="hidden")
+
+            self.hide_menu()
 
             # Initialize a new snake and construct the first body part (head)
             self.snake = Snake(self)
@@ -176,14 +182,26 @@ class Window(Frame):
 
     def lose_game(self):
         """Called when the player loses the game (collision with object)"""
-        self.canvas.itemconfig(self.header_text, state="normal")
+        self.configure_menu("You lose! Play again?")
         for part in self.snake.body_parts:
             self.canvas.delete(part.window_component)
+        self.canvas.delete(self.active_food.component)
         self.running = False
         # Update the player's high-score (if achieved)
         if self.eaten_food > self.high_score:
             self.high_score = self.eaten_food
             self.canvas.itemconfig(self.high_score_text, text="High-score: " + str(self.high_score))
+
+    def configure_menu(self, text: str):
+        """Configures and displays the main menu with the provided header text"""
+        self.canvas.itemconfig(self.header_text, text=text)
+        self.canvas.itemconfig(self.header_text, state="normal")
+        self.action_button.place(relx=0.5, rely=0.75, anchor=CENTER)
+
+    def hide_menu(self):
+        """Hides elements for the main menu"""
+        self.canvas.itemconfig(self.header_text, state="hidden")
+        self.action_button.place_forget()
 
 
 # Initialize the program
