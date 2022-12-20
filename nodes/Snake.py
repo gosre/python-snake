@@ -23,7 +23,7 @@ class Snake:
     # Adds a body part to the snake
     def create_body_part(self):
         part = BodyPart(self.window)
-        part.set_window_component(self.window.canvas.create_oval(0, 0, SNAKE_WIDTH, SNAKE_HEIGHT, outline="#733913 ", fill="#A0522D", width=1))
+        part.set_window_component(self.window.canvas.create_oval(0, 0, SNAKE_WIDTH, SNAKE_HEIGHT, outline="#733913", fill="#A0522D", width=1))
         if len(self.body_parts) == 0:
             part.set_position(400, 300)
             self.window.canvas.itemconfig(part.window_component, fill="#733913")

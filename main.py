@@ -4,8 +4,7 @@
 # @author Clayton Williams
 # @date 5-8-2018
 """
-
-from Tkinter import *
+from tkinter import *
 from nodes.Snake import Snake, BodyPart
 from nodes.Food import Food
 
@@ -70,7 +69,9 @@ class Window(Frame):
     # The snake parts remaining to add over time
     parts_to_add = 0
 
-    def __init__(self, master=None):
+    master: Tk = None
+
+    def __init__(self, master: Tk = None):
         Frame.__init__(self, master)
         self.master = master
         self.initialize()
