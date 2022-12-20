@@ -1,24 +1,24 @@
 """
-# main.py
-# The main program for 2D snake
-# @author Clayton Williams
-# @date 5-8-2018
+@author Clayton Williams
+@date 5-8-2018
 """
 from tkinter import *
-from nodes.Snake import Snake, BodyPart
+
 from nodes.Food import Food
+from nodes.Snake import Snake
 
 
-# Checks if two bounds (rectangles) are overlapping
-# @param bounds1, bounds2 - list of 4 numbers
-# @return boolean - true if they are overlapping
 def overlapping(bounds1, bounds2):
-    if bounds1[2] >= bounds2[0] and bounds2[2] >= bounds1[0] and bounds1[3] >= bounds2[1] and bounds2[3] >= bounds1[1]:
-        return True
-    return False
+    """
+    Checks if two rectangle boundaries are overlapping
+
+    Returns:
+        bool: true if boundaries were overlapping
+    """
+    return bounds1[2] >= bounds2[0] and bounds2[2] >= bounds1[0] \
+        and bounds1[3] >= bounds2[1] and bounds2[3] >= bounds1[1]
 
 
-# Main method
 def main():
 
     # Create a new instance of Tkinter
@@ -31,43 +31,40 @@ def main():
     root.mainloop()
 
 
-# Represents our class for displaying a window (inherits from class Frame)
 class Window(Frame):
 
-    # Width of the game canvas
+    # Default dimensions of the game canvas
     WIDTH = 900
-
-    # Height of the game canvas
     HEIGHT = 600
 
-    # Our interval to update (16 ms)
+    # Interval for our main game loop to process at (in milliseconds)
     UPDATE_INTERVAL = 16  # 60 fps
 
     # The canvas to draw our game components on
     canvas = None
 
     # Our snake
-    snake = None
+    snake: Snake = None
 
     # If the game is running
-    running = False
+    running: bool = False
 
     # The active food on the canvas
-    active_food = None
+    active_food: Food = None
 
     # The eaten food component
-    eaten_food_text = None
-    eaten_food = 0
+    eaten_food_text: str = None
+    eaten_food: int = 0
 
     # The player's high score for the session
-    high_score_text = None
-    high_score = 0
+    high_score_text: str = None
+    high_score: int = 0
 
     # The header text (big screen message)
-    header_text = None
+    header_text: str = None
 
     # The snake parts remaining to add over time
-    parts_to_add = 0
+    parts_to_add: int = 0
 
     master: Tk = None
 
@@ -76,12 +73,11 @@ class Window(Frame):
         self.master = master
         self.initialize()
 
-    # Initialize our game window
     def initialize(self):
-        # Set the title of our program
-        self.master.title("2D Snake")
+        """Initializes our game window and sets up static components"""
 
-        # Set the window size
+        # Basic window setup
+        self.master.title("2D Snake")
         self.master.minsize(width=self.WIDTH, height=self.HEIGHT)
 
         # Set a handler for keyboard
@@ -108,13 +104,14 @@ class Window(Frame):
         # Text area for the player's high score
         self.high_score_text = self.canvas.create_text(11, 30, text="High-score: N/A", font=("sans-serif", 10, "normal"), fill="white", anchor=NW)
 
-    # Define an update function for game updating and continue to schedule itself on an interval
     def update(self):
+        """Define an update function for game updating and continue to schedule itself on an interval"""
+
         # Only process if player has started the program
         if self.running:
             # Check for overlap with food (yay)
             if overlapping(self.active_food.get_bounds(), self.snake.get_bounds()):
-                self.parts_to_add += self.active_food.get_size()  # Increase this to a larger number for a "bigger snake faster"
+                self.parts_to_add += self.active_food.get_size()
                 self.new_food()
                 self.eaten_food += 1
 
@@ -126,46 +123,46 @@ class Window(Frame):
 
             # Check for collisions with walls
             snake_bounds = self.snake.get_bounds()
-            if snake_bounds[0] < 0 or snake_bounds[2] > self.winfo_width() or snake_bounds[1] < 0 or snake_bounds[3] > self.winfo_height():
+            if snake_bounds[0] < 0 or snake_bounds[2] > self.winfo_width() or snake_bounds[1] < 0 \
+                    or snake_bounds[3] > self.winfo_height():
                 self.lose_game()
 
             # Check for collisions with own body parts
             index = 0
             for part in self.snake.body_parts:
-                if overlapping(part.get_bounds(), self.snake.get_bounds()) and index > 15:  # TODO calculate proper amount of ignored parts (near head)
+                # TODO calculate proper amount of ignored parts (near head)
+                if overlapping(part.get_bounds(), self.snake.get_bounds()) and index > 15:
                     self.lose_game()
                 index += 1
         else:
             return
 
-        # Update the player's score
+        # Update the player's current score
         self.canvas.itemconfig(self.eaten_food_text, text="Score: " + str(self.eaten_food))
 
         # Reschedule after updating
         self.after(self.UPDATE_INTERVAL, self.update)
 
-    # Called when a key is pressed on the keyboard
     def key_pressed(self, event):
+        """Called when a key is pressed on the keyboard"""
         self.start_game()
         self.snake.change_direction(event.keysym)
 
-    # Creates a new piece of food
     def new_food(self):
+        """Creates a new piece of food and randomly places it"""
         if self.active_food:
             self.canvas.delete(self.active_food.component)
         self.active_food = Food(self)
 
-    # Start Game
     def start_game(self):
+        """Called when the player triggers the start of a game"""
         if not self.running:
             self.eaten_food = 0
             # Make the header text invisible
             self.canvas.itemconfig(self.header_text, state="hidden")
 
-            # Initialize a new snake
+            # Initialize a new snake and construct the first body part (head)
             self.snake = Snake(self)
-
-            # Make the head
             self.snake.create_body_part()
 
             # Set program flag
@@ -177,8 +174,8 @@ class Window(Frame):
             # Start the updater
             self.update()
 
-    # Called when the player loses the game (collision with object)
     def lose_game(self):
+        """Called when the player loses the game (collision with object)"""
         self.canvas.itemconfig(self.header_text, state="normal")
         for part in self.snake.body_parts:
             self.canvas.delete(part.window_component)
